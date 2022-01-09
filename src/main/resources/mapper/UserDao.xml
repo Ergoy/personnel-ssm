@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.ssm.dao.IUserDao">
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <if test="loginname!=null">
+                loginname,
+            </if>
+            <if test="password!=null">
+                password,
+            </if>
+            <if test="username!=null">
+                username,
+            </if>
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <if test="loginname!=null">
+                #{loginname},
+            </if>
+            <if test="password!=null">
+                #{password},
+            </if>
+            <if test="username!=null">
+                #{username},
+            </if>
+        </trim>
+    </sql>
+    <!--查询用户列表-->
+    <select id="get_List" resultType="User">
+        select * from user_inf
+    </select>
+    <select id="get_LikeList" resultType="User">
+        SELECT * FROM user_inf where loginname like CONCAT('%',#{content},'%')
+    </select>
+
+    <select id="findByNamePwd" resultType="User" parameterType="String">
+        <!--当mapper层的接口中超过一个参数是以下两种写法才可以被mybatis识别参数
+            1.在参数指定的名字出替换成接口中参数的序号(从0开始排)
+            2.在mapper接口参数前面加上注解@Param
+        -->
+        select * from user_inf  where username = #{0} AND password = #{1}
+    </select>
+    <insert id="insert_Info" parameterType="User">
+        insert into user_inf (<include refid="key"/>) values(<include refid="value"/>)
+    </insert>
+    <update id="update_Info" parameterType="User">
+        update user_inf
+        <set>
+            <if test="loginname != null">loginname=#{loginname},</if>
+            <if test="password != null">password=#{password},</if>
+            <if test="username != null">username=#{username},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="byIdFindUser" resultType="User" parameterType="Integer">
+        SELECT * FROM user_inf WHERE id = #{id}
+    </select>
+    <insert id="addUser" parameterType="User">
+        insert into user_inf(username,password,typename) values(#{username},#{password},#{typename})
+    </insert>
+    <delete id="byIdDelUser" parameterType="Integer">
+        delete from user_inf where id = #{id}
+    </delete>
+    <update id="updateUser" parameterType="user">
+        update user_inf set username=#{username},typename=#{typename},password=#{password} where id=#{id}
+    </update>
+
+    <select id="byUsernameFindUser" resultType="User" parameterType="String">
+        select * from user_inf where username=#{username}
+    </select>
+</mapper>

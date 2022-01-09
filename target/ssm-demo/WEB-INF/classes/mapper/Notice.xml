@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.ssm.dao.NoticeDao">
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <if test="title!=null">
+                title,
+            </if>
+            <if test="user_id!=null">
+                user_id,
+            </if>
+            <if test="content!=null">
+                content,
+            </if>
+            <if test="create_date!=null">
+                create_date,
+            </if>
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <if test="title!=null">
+                #{title},
+            </if>
+            <if test="user_id!=null">
+                #{user_id},
+            </if>
+            <if test="content!=null">
+                #{content},
+            </if>
+            <if test="create_date!=null">
+                #{create_date},
+            </if>
+        </trim>
+    </sql>
+    <!--查询全部公告-->
+    <select id="findNoticeList" resultMap="userResultMap">
+        select notice.*,`user`.* from notice_inf notice ,user_inf `user` where notice.user_id =`user`.id
+    </select>
+    <!--一对一联合查询-->
+    <resultMap id="userResultMap" type="Notice">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="Create_date" property="Create_date"/>
+        <result column="user_id" property="user_id"/>
+        <association property="user" javaType="User">
+            <id column="id" property="id"/>
+            <result column="typename" property="typename"/>
+            <result column="username" property="username"/>
+            <result column="password" property="password"/>
+        </association>
+    </resultMap>
+    <select id="get_LikeList" resultType="Notice">
+        select * from notice_inf where title like CONCAT('%',#{content},'%')
+    </select>
+    <insert id="addNotice" parameterType="Notice">
+        insert into notice_inf (<include refid="key"/>) values(<include refid="value"/>)
+    </insert>
+    <select id="get_Info" parameterType="Integer">
+        select * from notice_inf where id = #{id}
+    </select>
+    <update id="update_Info" parameterType="Notice">
+        update notice_inf
+        <set>
+            <if test="title != null">title=#{title},</if>
+            <if test="user_id != null">user_id=#{user_id},</if>
+            <if test="content != null">content=#{content},</if>
+            <if test="create_date != null">create_date=#{create_date},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="delete_Info" parameterType="Integer">
+        delete from notice_inf where id = #{id}
+    </delete>
+</mapper>

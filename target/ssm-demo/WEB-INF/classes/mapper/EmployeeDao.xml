@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.ssm.dao.EmployeeDao">
+
+    <select id="findEmpList" resultMap="empList">
+        select * from employee_inf
+    </select>
+    <resultMap id="empList" type="Employee">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="address" column="address"/>
+        <result property="phone" column="phone"/>
+        <result property="sex" column="sex"/>
+        <result property="education" column="education"/>
+        <result property="create_date" column="create_date"/>
+
+        <association property="dept" javaType="Dept" >
+            <id property="id" column="dept_id"/>
+        </association>
+    </resultMap>
+
+    <delete id="ByIdDelEmployee" parameterType="Integer">
+        delete from employee_inf where id = #{id}
+    </delete>
+
+</mapper>
